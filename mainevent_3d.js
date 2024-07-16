@@ -742,7 +742,7 @@ document.addEventListener('DOMContentLoaded', function() {
             height: 270,
             title: 'Angular Plane',
             xaxis: {
-                title: 'w along vxB [km]',
+                title: '\u03c9 along vxB [km]',
                 range: [x_min_a - 0.005 * lmax_a, x_min_a + 1.005 * lmax_a],
                 scaleanchor: 'y', // Ensure equal aspect ratio
                 constrain: 'domain' // Constrain to domain to avoid auto-scaling issues
