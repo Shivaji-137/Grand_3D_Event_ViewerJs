@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3D Grand Event Viewer</title>
+<link rel="stylesheet" href="./css/event3d.css">
+</head>
+<body>
+  <div id="top-bar">
+    <input type="file" id="fileInput" accept=".hdf5">
+    <button id="showHitPointsButton">Show hit points</button>
+  </div>
+  <div id="main-content">
+    <div id="plot"></div>
+    <div id="side-content">
+      <div id="side-panel">
+        <button id="playbutton" type="button" title="Click here to see Efield changing with time">Play</button>
+        <div id="Eplot"></div>
+        <div id="h_eplot"></div>
+      </div>
+      <div id="secondplot">
+        <div id="showerplot"></div>
+        <div id="angularplot"></div>
+      </div>
+      <div id="table_peak">
+        <div id="table"></div>
+        <div  id="peakplot"></div>
+      
+      </div>
+      <div id="GRAND_logo">
+        <img src="https://grand.cnrs.fr/wp-content/uploads/2023/01/GRAND_logo.png" alt="GRAND logo">
+      </div>
+    </div>
+  </div>
+  <script src="./antennageometry_colorpalettesrc/antenna_geometry.js"></script>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <script src="./src/hdf5filereader.js"></script>
+  <script src="./mainevent_3d.js"></script>
+  <script src="./src/hilbertTransform.js"></script>
+  <script src="./src/rbfinterpolator.js"></script>
+  <script src="./src/getinpeakshowerangularPlane.js"></script>
+  <script src="./antennageometry_colorpalettesrc/colorpalettee.js"></script>
+  <script src="./node_modules/oregondsp/kotlin/kotlin-kotlin-stdlib-js-ir.js"></script>
+  <script src="./node_modules/oregondsp/kotlin/oregondsp.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+  <script type="module">
+    //  using h5wasm js library for reading hdf5file from cdn websource
+    import h5wasm from "https://cdn.jsdelivr.net/npm/h5wasm@0.7.5/dist/esm/hdf5_hl.js";
+
+    document.getElementById('fileInput').addEventListener('change', async (event) => {
+      const file = event.target.files[0];
+      if (!file) {
+        console.log('No file selected');
+        return;
+      }
+      const Module = await h5wasm.ready;
+      const { FS } = Module;
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        const arrayBuffer = e.target.result;
+        FS.writeFile(file.name, new Uint8Array(arrayBuffer));
+        let hdf5File = new h5wasm.File(file.name, "r");
+        let filename = file.name.slice(0, -5);
+        process_data(hdf5File, filename);
+        hdf5File.close();
+      };
+      reader.readAsArrayBuffer(file);
+    });
+  </script>
+</body>
+</html>
